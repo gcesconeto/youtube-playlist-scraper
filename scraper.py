@@ -2,10 +2,10 @@ from parsel import Selector
 import requests
 import time
 
-BASE_URL = 'https://www.youtube.com'
+BASE_URL = "https://www.youtube.com"
 FETCH_AWAIT_TIME = 1
 
-VIDEO_URLS = '//a[@id="thumbnail"]/@href'
+VIDEO_URLS_RULE = '//a[@id="thumbnail"]/@href'
 
 
 def fetch(url):
@@ -27,11 +27,11 @@ def url_formatter(url):
     return BASE_URL + url.split("&")[0]
 
 
-def get_url_list():
-    with open("Yacht_playlist_list.html", "r") as file:
+def get_url_list(html_file):
+    with open(html_file, "r") as file:
         content = file.read()
     selector = Selector(text=content)
-    urls_list = selector.xpath(VIDEO_URLS).getall()
+    urls_list = selector.xpath(VIDEO_URLS_RULE).getall()
 
     return list(map(url_formatter, urls_list))
 
@@ -47,24 +47,19 @@ def get_date(content):
 def scrape_video(content, url):
     try:
         video = {}
-        video['url'] = url
-        video['title'] = get_title(content)
-        video['pub_date'] = get_date(content)
+        video["url"] = url
+        video["title"] = get_title(content)
+        video["pub_date"] = get_date(content)
         return video
     except TypeError:
         return video
 
 
-def get_videos(amount):
+def get_videos(html_file, max):
     results = []
-    while len(results) < amount:
-        url_list = get_url_list()
-        for url in url_list:
-            if len(results) >= amount:
-                break
-            results.append(scrape_video(fetch(url), url))
+    url_list = get_url_list(html_file)
+    for url in url_list:
+        if len(results) >= max:
+            break
+        results.append(scrape_video(fetch(url), url))
     return results
-
-
-
-
