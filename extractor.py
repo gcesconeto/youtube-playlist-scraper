@@ -27,7 +27,6 @@ def concatenate_model(list):
 
 def model_extractor(title):
     details = title.split(" : ")[1].split(" ")
-    print(details)
     if details[0][0] in ["1", "2"]:
         year = details[0][0:4]
         brand = details[1]

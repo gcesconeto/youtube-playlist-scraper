@@ -1,0 +1,1 @@
+Simple scraper to get info from youtube playlist, specifically this one: https://www.youtube.com/playlist?list=PLOrUltkUqy_PRK9qpn5kHeSSOLFAX0vK0
