@@ -3,14 +3,14 @@ import requests
 import time
 
 BASE_URL = "https://www.youtube.com"
-FETCH_AWAIT_TIME = 1
+FETCH_AWAIT_TIME = 0.2
 
 VIDEO_URLS_RULE = '//a[@id="thumbnail"]/@href'
 
 
 def fetch(url):
     try:
-        time.sleep(FETCH_AWAIT_TIME)
+        # time.sleep(FETCH_AWAIT_TIME)
         response = requests.get(url, timeout=3)
         if response.status_code == 200:
             # with open("dump.html", "w") as file:
@@ -19,6 +19,7 @@ def fetch(url):
         else:
             return None
     except requests.Timeout:
+        print(f"!!! Timeout while fetching {url}")
         return None
 
 
@@ -55,11 +56,14 @@ def scrape_video(content, url):
         return video
 
 
-def get_videos(html_file, max):
+def get_videos(html_file, start, max):
     results = []
     url_list = get_url_list(html_file)
-    for url in url_list:
-        if len(results) >= max:
-            break
-        results.append(scrape_video(fetch(url), url))
+    end = start + max
+    if len(url_list) < end:
+        end = len(url_list)
+    for index in range(start, end):
+        print(index)
+        print(f"fetching {url_list[index]}")
+        results.append(scrape_video(fetch(url_list[index]), url_list[index]))
     return results
