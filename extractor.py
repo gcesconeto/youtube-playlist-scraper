@@ -12,10 +12,12 @@ def price_extractor(title):
         space_split = title.split(" ")
         mult_factor = 1
         if space_split[0][0] in CURRENCY_SIGNS:
-            if space_split[1] == "Million" or space_split[0][-1] == "M":
+            if space_split[1] in ["Million", "million"] or space_split[0][-1] == "M":
                 mult_factor = 1000000
+            elif space_split[0][-1] == "K":
+                mult_factor = 1000
             price = (
-                float(space_split[0][1:].replace(",", "").replace("M", ""))
+                float(space_split[0][1:].replace(",", "").replace("M", "").replace("K", ""))
                 * mult_factor
             )
             return {"price": price, "currency": CURRENCY_SIGNS[space_split[0][0]]}
@@ -37,15 +39,18 @@ def concatenate_model(list):
         return "Model error"
 
 
-def model_extractor(title):
+def model_extractor(title, pub_date):
     try:
-        details = title.split(" : ")[1].split(" ")
+        post_colon = title.split(" : ")
+        if len(post_colon) < 2:
+            post_colon = title.split("Yacht Tour ")
+        details = post_colon[1].split(" ")
         if details[0][0] in ["1", "2"]:
             year = details[0][0:4]
             brand = details[1]
             model = concatenate_model(details[2:])
         else:
-            year = None
+            year = pub_date[0:4]
             brand = details[0]
             model = concatenate_model(details[1:])
         return {"year": year, "brand": brand, "model": model}

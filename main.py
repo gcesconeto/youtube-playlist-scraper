@@ -8,7 +8,7 @@ def dict_list_maker(list):
     try:
         dict_list = []
         for video in list:
-            model = model_extractor(video["title"])
+            model = model_extractor(video["title"], video["pub_date"])
             price = price_extractor(video["title"])
             dict_list.append({**video, **model, **price})
         return dict_list
